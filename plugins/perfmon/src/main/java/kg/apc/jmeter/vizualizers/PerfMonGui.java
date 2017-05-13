@@ -49,6 +49,15 @@ import org.apache.log.Logger;
 public class PerfMonGui
         extends AbstractOverTimeVisualizer {
 
+
+    ///// =e
+    public int counter = 0;
+    public int data_collection_counter = 0;
+    private JTextArea recomTextArea;
+    private JScrollPane recomPane;
+    private StatisticsCollector systemStat;
+    ////
+
     public static final List<String> metrics = Arrays.asList("CPU", "Memory", "Swap", "Disks I/O", "Network I/O");
     private static final Logger log = LoggingManager.getLoggerForClass();
     private PowerTableModel tableModel;
@@ -70,6 +79,9 @@ public class PerfMonGui
         setGranulation(1000);
         graphPanel.getGraphObject().setYAxisLabel("Performance Metrics");
         graphPanel.getGraphObject().getChartSettings().setExpendRows(true);
+
+        /////// =e
+        systemStat = new StatisticsCollector();
     }
 
     @Override
@@ -103,6 +115,23 @@ public class PerfMonGui
         JPanel panel = new JPanel(new BorderLayout());
         JPanel innerTopPanel = new JPanel(new BorderLayout());
 
+        ///// =e
+        recomPane = new JScrollPane();
+        recomPane.setMinimumSize(new Dimension(100, 100));
+        recomPane.setPreferredSize(new Dimension(100, 100));
+
+        recomTextArea = new JTextArea();
+        recomTextArea.setForeground(Color.black);
+        recomTextArea.setBackground(new Color(163, 164, 255));
+        recomTextArea.setEditable(true);
+        recomPane.setViewportView(recomTextArea);
+        innerTopPanel.add(recomPane, BorderLayout.SOUTH);
+        recomPane.setVisible(true);
+        recomTextArea.setText("fuck");
+        System.out.println("fuuuuuuuuck");
+        ///
+
+
         errorPane = new JScrollPane();
         errorPane.setMinimumSize(new Dimension(100, 50));
         errorPane.setPreferredSize(new Dimension(100, 50));
@@ -116,12 +145,13 @@ public class PerfMonGui
         registerPopup();
 
         innerTopPanel.add(createConnectionsPanel(), BorderLayout.NORTH);
-        innerTopPanel.add(errorPane, BorderLayout.SOUTH);
-        innerTopPanel.add(getFilePanel(), BorderLayout.CENTER);
+        innerTopPanel.add(errorPane, BorderLayout.EAST);
+        innerTopPanel.add(getFilePanel(), BorderLayout.WEST);
 
         panel.add(innerTopPanel, BorderLayout.NORTH);
 
         errorPane.setVisible(false);
+
 
         return panel;
     }
@@ -269,6 +299,40 @@ public class PerfMonGui
             if (isSampleIncluded(res)) {
                 super.add(res);
                 addPerfMonRecord(res.getSampleLabel(), normalizeTime(res.getStartTime()), PerfMonSampleResult.getValue(res));
+                systemStat.CollectData(res.getSampleLabel(), PerfMonSampleResult.getValue(res));
+                counter ++;
+
+                if(counter > 10)
+                {
+                    // Periodic Collection ####################3
+
+                    systemStat.periodicCollection();
+
+                    data_collection_counter ++;
+                    if(data_collection_counter == 5) {
+                        systemStat.findCpuGaps();
+                        systemStat.findNetGaps();
+                        systemStat.findMemGaps();
+                        systemStat.findDiskGaps();
+
+
+                        data_collection_counter = 0;
+                    }
+
+                    //Decision Making ####################
+                    // Visualize #########################
+                    recomTextArea.setText(systemStat.makeDecision());
+
+
+//                    recomTextArea.append("\n CPU: " + systemStat.GetCpuStat());
+//                    recomTextArea.append("\n Mem: " + systemStat.GetMemStat());
+//                    recomTextArea.append("\n Network I/O: " + systemStat.GetNetStat());
+//                    recomTextArea.append("\n Disk: " + systemStat.GetDiskStat());
+
+                    counter = 0;
+                    //recomTextArea.append("\n===============================================");
+
+                }
                 updateGui(null);
             }
         } else {
