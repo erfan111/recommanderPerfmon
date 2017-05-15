@@ -1,9 +1,6 @@
 package kg.apc.jmeter.samplers;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -26,6 +23,13 @@ public class HTTPRawSampler extends AbstractIPSampler {
     private static final String PARSE = "parse";
     private static final String RNpattern = "\\r\\n";
     private static final String SPACE = " ";
+    // =e
+    private static final String LATENCYFILENAME = "/home/erfan/httpraw.txt";
+    private static File latencyFile;
+    private BufferedWriter bw;
+    private FileWriter fw;
+    //
+
     // 
     protected static final Logger log = LoggingManager.getLoggerForClass();
     private static final Pattern anyContent = Pattern.compile(".+", Pattern.DOTALL);
@@ -34,6 +38,26 @@ public class HTTPRawSampler extends AbstractIPSampler {
     
     public HTTPRawSampler() {
         super();
+
+        //  =E
+        latencyFile = new File(LATENCYFILENAME);
+        try {
+            if (!latencyFile.exists()) {
+                latencyFile.createNewFile();
+                System.out.println("not exists");
+            }
+            fw = new FileWriter(latencyFile.getAbsoluteFile(), true);
+            System.out.println("file writer");
+            bw = new BufferedWriter(fw);
+            System.out.println("buffered writer");
+            latencyFile = new File(LATENCYFILENAME);
+            System.out.println("file");
+        } catch (Exception e) {
+            System.out.println("file writer exception");
+            e.printStackTrace();
+        }
+
+        //
         log.debug("File reading chunk size: " + fileSendingChunk);
     }
     
@@ -106,7 +130,18 @@ public class HTTPRawSampler extends AbstractIPSampler {
         if (!scanner.hasNextLine()) {
             return;
         }
-        
+
+        // =E
+
+        // true = append file
+        try {
+            bw.write(res.getLatency() + "," + res.getResponseCode() + "\n");
+            bw.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println(res.getLatency() + " " + res.getResponseCode());
+        //
         String httpStatus = scanner.nextLine();
         
         int s = httpStatus.indexOf(SPACE);
@@ -130,7 +165,6 @@ public class HTTPRawSampler extends AbstractIPSampler {
         if (!scanner.hasNextLine()) {
             return;
         }
-
         StringBuilder headers = new StringBuilder();
         String line;
         while (scanner.hasNextLine() && !(line = scanner.nextLine()).isEmpty()) {
