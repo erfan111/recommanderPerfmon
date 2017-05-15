@@ -1,9 +1,11 @@
 package kg.apc.jmeter.vizualizers;
 
 import org.apache.commons.jexl2.internal.AbstractExecutor;
+import org.apache.xpath.operations.Bool;
 import sun.nio.ch.Net;
 import sun.nio.ch.Secrets;
 
+import java.io.*;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,6 +30,9 @@ public class StatisticsCollector {
     private ArrayList<SampleData> Network;
     private ArrayList<SampleData> Disk;
     private ArrayList<SampleData> Mem;
+    private ArrayList<Integer> Tail;
+    File latencyFile = new File("/home/erfan/httpraw.txt");
+    BufferedReader reader = null;
 
 
     private ArrayList<SampleData> CPUAverages;
@@ -47,6 +52,8 @@ public class StatisticsCollector {
     private ArrayList<Integer> DiskStartGapIndex;
     private ArrayList<Integer> DiskEndGapIndex;
 
+    private StatisticsAnalyzer Analyzer;
+
 
     private static final double CpuGapThreshold = 5.0;
     private static double NetworkGapThreshold = 500000.0;
@@ -59,6 +66,7 @@ public class StatisticsCollector {
         Mem = new ArrayList<>();
         Network = new ArrayList<>();
         Disk = new ArrayList<>();
+        Tail = new ArrayList<>();
 
         CPUAverages = new ArrayList<>();
         MemAverages = new ArrayList<>();
@@ -74,10 +82,20 @@ public class StatisticsCollector {
         DiskEndGapIndex = new ArrayList<>();
         DiskStartGapIndex = new ArrayList<>();
 
+
+
         MemEndGapIndex = new ArrayList<>();
         MemStartGapIndex = new ArrayList<>();
 
+        Analyzer = new StatisticsAnalyzer();
+
         tempThread = 10;
+
+        try {
+            reader = new BufferedReader(new FileReader(latencyFile));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -126,6 +144,8 @@ public class StatisticsCollector {
                 max_item = item;
             }
         }
+
+
 
 
         System.out.println("%%%%%%%%%%%%%%%%%1");
@@ -477,6 +497,59 @@ public class StatisticsCollector {
         }
 
         return iteration + "";
+    }
+
+    private String getSystemStatus()
+    {
+        Double CpuAvg = 0.0;
+        Double MemAvg = 0.0;
+        Double NetAvg = 0.0;
+        Double TailAvg = 0.0;
+
+        Boolean CpuStat;
+        Boolean TailStat;
+        Boolean NetStat;
+
+        for(SampleData item: CPUAverages)
+        {
+            CpuAvg = CpuAvg + item.getData();
+        }
+
+        for(SampleData item: NetworkAverages)
+        {
+            NetAvg = NetAvg + item.getData();
+        }
+
+        for(SampleData item: MemAverages)
+        {
+            MemAvg = MemAvg + item.getData();
+        }
+
+        // =e
+        String temp = "";
+        try {
+            while((temp = reader.readLine()) != null){
+                Tail.add(Integer.parseInt(temp));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //
+
+        for(Integer item: Tail)
+        {
+            TailAvg = TailAvg + item;
+        }
+
+        Tail.clear();
+
+
+        CpuStat = CpuAvg > 80;
+        NetStat = NetAvg > 10000000;
+        TailStat = TailAvg > 20;
+
+        return Analyzer.getStatus(CpuStat, TailStat, NetStat);
 
     }
 }
