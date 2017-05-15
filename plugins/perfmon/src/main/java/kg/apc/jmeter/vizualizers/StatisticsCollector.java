@@ -1,22 +1,15 @@
 package kg.apc.jmeter.vizualizers;
 
-import org.apache.commons.jexl2.internal.AbstractExecutor;
-import org.apache.xpath.operations.Bool;
-import sun.nio.ch.Net;
-import sun.nio.ch.Secrets;
-
 import java.io.*;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+
 
 /**
- * Created by Erfan Sharafzadeh on 5/11/17.
+ * Created by Erfan Sharafzadeh, Alireza Sanaee on 5/11/17.
  */
 
-public class StatisticsCollector {
+
+class StatisticsCollector {
 
     //private ArrayList<Double> CPU;
     //private ArrayList<Double> Mem;
@@ -31,8 +24,8 @@ public class StatisticsCollector {
     private ArrayList<SampleData> Disk;
     private ArrayList<SampleData> Mem;
     private ArrayList<Integer> Tail;
-    File latencyFile = new File("/home/erfan/httpraw.txt");
-    BufferedReader reader = null;
+    private File latencyFile;
+    BufferedReader reader;
 
 
     private ArrayList<SampleData> CPUAverages;
@@ -60,14 +53,14 @@ public class StatisticsCollector {
     private static final double MemGapThreshold = 5.0;
     private static final double DiskGapThreshold = 0.01;
 
-    public StatisticsCollector()
+    StatisticsCollector()
     {
         CPU = new ArrayList<>();
         Mem = new ArrayList<>();
         Network = new ArrayList<>();
         Disk = new ArrayList<>();
         Tail = new ArrayList<>();
-
+        latencyFile = new File("/home/erfan/httpraw.txt");
         CPUAverages = new ArrayList<>();
         MemAverages = new ArrayList<>();
         NetworkAverages = new ArrayList<>();
@@ -129,7 +122,7 @@ public class StatisticsCollector {
 //        avg = sum/data.size();
 //        data.clear();
 //        return avg.toString();
-        System.out.println("MAAAAAAX");
+//        System.out.println("MAAAAAAX");
 
 
         //String max =  Collections.max(data).toString();
@@ -144,13 +137,7 @@ public class StatisticsCollector {
                 max_item = item;
             }
         }
-
-
-
-
-        System.out.println("%%%%%%%%%%%%%%%%%1");
         data.clear();
-        System.out.println("%%%%%%%%%%%%%%%%%2");
 
         return max_item;
     }
@@ -175,9 +162,9 @@ public class StatisticsCollector {
         return GetAverage(Disk);
     }
 
-    public void CollectData(String type, Double value) {
+    void CollectData(String type, Double value) {
 
-        System.out.println(type + " " + value);
+//        System.out.println(type + " " + value);
         if (type != null) {
             switch (type.split(" ")[1]) {
                 case "CPU":
@@ -203,22 +190,18 @@ public class StatisticsCollector {
         }
     }
 
-    public void periodicCollection()
+    void periodicCollection()
     {
-        System.out.println("1");
         CPUAverages.add(GetCpuStat());
-        System.out.println("2");
         MemAverages.add(GetMemStat());
-        System.out.println("3");
         NetworkAverages.add(GetNetStat());
-        System.out.println("4");
         DiskAverages.add(GetDiskStat());
     }
 
 
-    public void findCpuGaps()
+    void findCpuGaps()
     {
-        System.out.println("findCpuGaps");
+//        System.out.println("findCpuGaps");
 
         CpuStartGapIndex.clear();
         CpuEndGapIndex.clear();
@@ -229,7 +212,7 @@ public class StatisticsCollector {
         {
             if(i == 0 && !StartGap)
             {
-                System.out.println("startGap " + i);
+//                System.out.println("startGap " + i);
                 CpuStartGapIndex.add(i);
                 StartGap = true;
             }
@@ -239,42 +222,42 @@ public class StatisticsCollector {
 
                 if(StartGap && Abs >= CpuGapThreshold)
                 {
-                    System.out.println("EndGap " + (i - 1) + "Start Gap " + i);
+//                    System.out.println("EndGap " + (i - 1) + "Start Gap " + i);
                     CpuEndGapIndex.add(i - 1);
                     CpuStartGapIndex.add(i);
                 }
             }
             else
             {
-                System.out.println("EndGap " + i);
+//                System.out.println("EndGap " + i);
                 CpuEndGapIndex.add(i);
                 StartGap = false;
             }
         }
 
-        for (SampleData item: CPUAverages
-             ) {
-            System.out.print(item + " ");
-        }
-
-        System.out.println();
-
-
-        for(int item: CpuStartGapIndex
-             ) {
-             System.out.print(item + " ");
-        }
-        System.out.println();
-        for( int item: CpuEndGapIndex
-             ) {
-            System.out.print(item + " ");
-        }
-        System.out.println();
+//        for (SampleData item: CPUAverages
+//             ) {
+//            System.out.print(item + " ");
+//        }
+//
+//        System.out.println();
+//
+//
+//        for(int item: CpuStartGapIndex
+//             ) {
+//             System.out.print(item + " ");
+//        }
+//        System.out.println();
+//        for( int item: CpuEndGapIndex
+//             ) {
+//            System.out.print(item + " ");
+//        }
+//        System.out.println();
     }
 
-    public void findNetGaps()
+    void findNetGaps()
     {
-        System.out.println("findNetGaps");
+//        System.out.println("findNetGaps");
 
         NetworkStartGapIndex.clear();
         NetworkEndGapIndex.clear();
@@ -285,10 +268,10 @@ public class StatisticsCollector {
         double Abs;
         for(int i = 0; i < NetworkAverages.size(); i++)
         {
-            System.out.println(NetworkGapThreshold);
+//            System.out.println(NetworkGapThreshold);
             if(i == 0 && !StartGap)
             {
-                System.out.println("startGap " + i);
+//                System.out.println("startGap " + i);
                 NetworkStartGapIndex.add(i);
                 StartGap = true;
             }
@@ -299,7 +282,7 @@ public class StatisticsCollector {
                 if(StartGap && Abs >= NetworkGapThreshold)
                 {
 
-                    System.out.println("EndGap " + (i - 1) + "Start Gap " + i);
+//                    System.out.println("EndGap " + (i - 1) + "Start Gap " + i);
                     NetworkEndGapIndex.add(i - 1);
                     NetworkStartGapIndex.add(i);
                     if(modified) {
@@ -311,7 +294,7 @@ public class StatisticsCollector {
                 {
                     if(StartGap && Abs >= NetworkGapThreshold/2)
                     {
-                        System.out.println("EndGap " + (i - 1) + "Start Gap " + i);
+//                        System.out.println("EndGap " + (i - 1) + "Start Gap " + i);
                         NetworkEndGapIndex.add(i - 1);
                         NetworkStartGapIndex.add(i);
                         if(!modified)
@@ -322,7 +305,7 @@ public class StatisticsCollector {
             }
             else
             {
-                System.out.println("EndGap " + i);
+//                System.out.println("EndGap " + i);
                 NetworkEndGapIndex.add(i);
                 StartGap = false;
             }
@@ -330,28 +313,28 @@ public class StatisticsCollector {
 
         NetworkGapThreshold = 500000.0;
 
-        for (SampleData item: NetworkAverages
-                ) {
-            System.out.print(item + " ");
-        }
-
-        System.out.println();
-
-        for(int item: NetworkStartGapIndex
-                ) {
-            System.out.print(item + " ");
-        }
-        System.out.println();
-        for( int item: NetworkEndGapIndex
-                ) {
-            System.out.print(item + " ");
-        }
-        System.out.println();
+//        for (SampleData item: NetworkAverages
+//                ) {
+//            System.out.print(item + " ");
+//        }
+//
+//        System.out.println();
+//
+//        for(int item: NetworkStartGapIndex
+//                ) {
+//            System.out.print(item + " ");
+//        }
+//        System.out.println();
+//        for( int item: NetworkEndGapIndex
+//                ) {
+//            System.out.print(item + " ");
+//        }
+//        System.out.println();
     }
 
-    public void findMemGaps()
+    void findMemGaps()
     {
-        System.out.println("findMemGaps");
+//        System.out.println("findMemGaps");
 
         MemStartGapIndex.clear();
         MemEndGapIndex.clear();
@@ -362,7 +345,7 @@ public class StatisticsCollector {
         {
             if(i == 0 && !StartGap)
             {
-                System.out.println("startGap " + i);
+//                System.out.println("startGap " + i);
                 MemStartGapIndex.add(i);
                 StartGap = true;
             }
@@ -372,46 +355,46 @@ public class StatisticsCollector {
 
                 if(StartGap && Abs >= MemGapThreshold)
                 {
-                    System.out.println("EndGap " + (i - 1) + "Start Gap " + i);
+//                    System.out.println("EndGap " + (i - 1) + "Start Gap " + i);
                     MemEndGapIndex.add(i - 1);
                     MemStartGapIndex.add(i);
                 }
             }
             else
             {
-                System.out.println("EndGap " + i);
+//                System.out.println("EndGap " + i);
                 MemEndGapIndex.add(i);
                 StartGap = false;
             }
         }
 
 
-        for (SampleData item: MemAverages
-                ) {
-            System.out.print(item + " ");
-        }
-
-        System.out.println();
-
-
-        for(int item: MemStartGapIndex
-                ) {
-            System.out.print(item + " ");
-        }
-
-        System.out.println();
-
-        for( int item: MemEndGapIndex
-                ) {
-            System.out.print(item + " ");
-        }
-
-        System.out.println();
+//        for (SampleData item: MemAverages
+//                ) {
+//            System.out.print(item + " ");
+//        }
+//
+//        System.out.println();
+//
+//
+//        for(int item: MemStartGapIndex
+//                ) {
+//            System.out.print(item + " ");
+//        }
+//
+//        System.out.println();
+//
+//        for( int item: MemEndGapIndex
+//                ) {
+//            System.out.print(item + " ");
+//        }
+//
+//        System.out.println();
     }
 
-    public void findDiskGaps()
+    void findDiskGaps()
     {
-        System.out.println("findDiskGaps");
+//        System.out.println("findDiskGaps");
 
         DiskStartGapIndex.clear();
         DiskEndGapIndex.clear();
@@ -422,7 +405,7 @@ public class StatisticsCollector {
         {
             if(i == 0 && !StartGap)
             {
-                System.out.println("startGap " + i);
+//                System.out.println("startGap " + i);
                 DiskStartGapIndex.add(i);
                 StartGap = true;
             }
@@ -432,39 +415,39 @@ public class StatisticsCollector {
 
                 if(StartGap && Abs >= DiskGapThreshold)
                 {
-                    System.out.println("EndGap " + (i - 1) + "Start Gap " + i);
+//                    System.out.println("EndGap " + (i - 1) + "Start Gap " + i);
                     DiskEndGapIndex.add(i - 1);
                     DiskStartGapIndex.add(i);
                 }
             }
             else
             {
-                System.out.println("EndGap " + i);
+//                System.out.println("EndGap " + i);
                 DiskEndGapIndex.add(i);
                 StartGap = false;
             }
         }
 
-        for (SampleData item: DiskAverages
-                ) {
-            System.out.print(item + " ");
-        }
-
-        System.out.println();
-
-        for(int item: DiskStartGapIndex
-                ) {
-            System.out.print(item + " ");
-        }
-
-        System.out.println();
-
-        for( int item: DiskEndGapIndex
-                ) {
-            System.out.print(item + " ");
-        }
-
-        System.out.println();
+//        for (SampleData item: DiskAverages
+//                ) {
+//            System.out.print(item + " ");
+//        }
+//
+//        System.out.println();
+//
+//        for(int item: DiskStartGapIndex
+//                ) {
+//            System.out.print(item + " ");
+//        }
+//
+//        System.out.println();
+//
+//        for( int item: DiskEndGapIndex
+//                ) {
+//            System.out.print(item + " ");
+//        }
+//
+//        System.out.println();
     }
 
     public String makeDecision() {
@@ -499,7 +482,7 @@ public class StatisticsCollector {
         return iteration + "";
     }
 
-    private String getSystemStatus()
+    String getSystemStatus()
     {
         Double CpuAvg = 0.0;
         Double MemAvg = 0.0;

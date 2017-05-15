@@ -135,7 +135,7 @@ public class HTTPRawSampler extends AbstractIPSampler {
 
         // true = append file
         try {
-            bw.write(res.getLatency() + "," + res.getResponseCode() + "\n");
+            bw.write(res.getLatency() + "\n");
             bw.flush();
         } catch (IOException e) {
             e.printStackTrace();

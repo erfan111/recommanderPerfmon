@@ -127,8 +127,7 @@ public class PerfMonGui
         recomPane.setViewportView(recomTextArea);
         innerTopPanel.add(recomPane, BorderLayout.SOUTH);
         recomPane.setVisible(true);
-        recomTextArea.setText("fuck");
-        System.out.println("fuuuuuuuuck");
+        recomTextArea.setText("Waiting for samples...");
         ///
 
 
@@ -321,7 +320,8 @@ public class PerfMonGui
 
                     //Decision Making ####################
                     // Visualize #########################
-                    recomTextArea.setText(systemStat.makeDecision());
+                    //recomTextArea.setText(systemStat.makeDecision());
+                    recomTextArea.setText(systemStat.getSystemStatus());
 
 
 //                    recomTextArea.append("\n CPU: " + systemStat.GetCpuStat());

@@ -11,15 +11,8 @@ import java.util.ArrayList;
 public class StatisticsAnalyzer {
 
     //public
-
-
     private Boolean[][] SystemStateDecisionHelper;
     private String[] Result;
-
-
-
-
-
 
 
     public StatisticsAnalyzer()
