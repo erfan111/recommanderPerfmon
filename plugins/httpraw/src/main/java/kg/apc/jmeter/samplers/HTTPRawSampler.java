@@ -15,6 +15,7 @@ import org.apache.jmeter.util.JMeterUtils;
 import org.apache.jorphan.logging.LoggingManager;
 import org.apache.log.Logger;
 
+
 // FIXME: actually keep-alive does not work!
 public class HTTPRawSampler extends AbstractIPSampler {
     
@@ -24,7 +25,8 @@ public class HTTPRawSampler extends AbstractIPSampler {
     private static final String RNpattern = "\\r\\n";
     private static final String SPACE = " ";
     // =e
-    private static final String LATENCYFILENAME = "/home/erfan/httpraw.txt";
+    private static String Uname;
+    private static String LATENCYFILENAME;// = "/home/erfan/file.txt";
     private static File latencyFile;
     private BufferedWriter bw;
     private FileWriter fw;
@@ -39,19 +41,22 @@ public class HTTPRawSampler extends AbstractIPSampler {
     public HTTPRawSampler() {
         super();
 
+        Uname = System.getProperty("user.name");
+        LATENCYFILENAME = "/home/" + Uname + "/file.txt";
+
         //  =E
         latencyFile = new File(LATENCYFILENAME);
         try {
             if (!latencyFile.exists()) {
                 latencyFile.createNewFile();
-                System.out.println("not exists");
+//                System.out.println("not exists");
             }
             fw = new FileWriter(latencyFile.getAbsoluteFile(), true);
-            System.out.println("file writer");
+//            System.out.println("file writer");
             bw = new BufferedWriter(fw);
-            System.out.println("buffered writer");
+//            System.out.println("buffered writer");
             latencyFile = new File(LATENCYFILENAME);
-            System.out.println("file");
+//            System.out.println("file");
         } catch (Exception e) {
             System.out.println("file writer exception");
             e.printStackTrace();
@@ -140,7 +145,7 @@ public class HTTPRawSampler extends AbstractIPSampler {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println(res.getLatency() + " " + res.getResponseCode());
+//        System.out.println(res.getLatency() + " " + res.getResponseCode());
         //
         String httpStatus = scanner.nextLine();
         

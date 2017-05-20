@@ -46,14 +46,14 @@ public class StatisticsAnalyzer {
         };
 
         Result = new String[] {
-                "Don't Care",
-                "OK",
-                "Congested Net",
-                "Don't Care",
-                "Network Infrastructure",
-                "Add CPU Power",
-                "Fully Utilized System",
-                "Client Queue, Network Infrastructure"
+                "هیچ مورد غیر قابل قبولی مشاهده نمی شود",
+                "هیچ مورد غیر قابل قبولی مشاهده نمی شود 2",
+                "تراکم بالای درخواست ها در شبکه: congested network",
+                "داده ها برای تصمیم گیری کافی نیست",
+                "ساختار زیربنای شبکه ضعیف است",
+                "قدرت پردازشی سیستم را افزایش دهید",
+                "سیستم از حداکثر ظرفیت خود استفاده می نماید",
+                "تاخیر های بلند مشاهده می گردد. مشکل در وب سرور است"
         };
     }
 
@@ -69,6 +69,7 @@ public class StatisticsAnalyzer {
                 index = i;
             }
         }
+        System.out.println("Result " + index);
         return Result[index];
     }
 

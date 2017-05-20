@@ -2,6 +2,7 @@ package kg.apc.jmeter.vizualizers;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 
 
 /**
@@ -26,6 +27,8 @@ class StatisticsCollector {
     private ArrayList<Integer> Tail;
     private File latencyFile;
     BufferedReader reader;
+    PrintWriter writer;
+
 
 
     private ArrayList<SampleData> CPUAverages;
@@ -60,7 +63,7 @@ class StatisticsCollector {
         Network = new ArrayList<>();
         Disk = new ArrayList<>();
         Tail = new ArrayList<>();
-        latencyFile = new File("/home/erfan/httpraw.txt");
+        latencyFile = new File("/home/erfan/file.txt");
         CPUAverages = new ArrayList<>();
         MemAverages = new ArrayList<>();
         NetworkAverages = new ArrayList<>();
@@ -85,6 +88,7 @@ class StatisticsCollector {
         tempThread = 10;
 
         try {
+            writer = null;
             reader = new BufferedReader(new FileReader(latencyFile));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -130,7 +134,7 @@ class StatisticsCollector {
         SampleData max_item = new SampleData();
         for (SampleData item: data
              ) {
-            System.out.println(item);
+//            System.out.println(item);
             if(item.getData() > max)
             {
                 max = item.getData();
@@ -456,7 +460,6 @@ class StatisticsCollector {
         for (int i = 0; i < CpuStartGapIndex.size(); i++) {
             sum = sum + (CpuEndGapIndex.get(i) - CpuStartGapIndex.get(i));
         }
-
         averageRange = sum / CpuStartGapIndex.size();
 
         int firstDistance = 0;
@@ -475,7 +478,6 @@ class StatisticsCollector {
                     iteration++;
                 }
             }
-
             firstDistance = secondDistance;
         }
 
@@ -497,41 +499,51 @@ class StatisticsCollector {
         {
             CpuAvg = CpuAvg + item.getData();
         }
+        CpuAvg /= CPUAverages.size();
 
         for(SampleData item: NetworkAverages)
         {
             NetAvg = NetAvg + item.getData();
         }
-
+        NetAvg /= NetworkAverages.size();
         for(SampleData item: MemAverages)
         {
             MemAvg = MemAvg + item.getData();
         }
+        MemAvg /= MemAverages.size();
 
         // =e
         String temp = "";
+        int tempInt;
+        assert Tail.size() == 0;
         try {
             while((temp = reader.readLine()) != null){
-                Tail.add(Integer.parseInt(temp));
+                tempInt = Integer.parseInt(temp);
+//                System.out.println(temp + ": " + tempInt);
+                Tail.add(tempInt);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        //
-
+        TailAvg = 0.0;
         for(Integer item: Tail)
         {
             TailAvg = TailAvg + item;
         }
+        System.out.println(Tail.size() + " tail size");
 
-        Tail.clear();
+        TailAvg /= Tail.size();
 
+        Collections.sort(Tail);
 
+        int per_index = 999*Tail.size()/1000;
+//        System.out.println("perindex: " + per_index);
+//        System.out.println("percentile: " + Tail.get(per_index-1) + " *** " + TailAvg);
+//        System.out.println("last latency: " + Tail.get(Tail.size()-1));
         CpuStat = CpuAvg > 80;
         NetStat = NetAvg > 10000000;
-        TailStat = TailAvg > 20;
-
+        TailStat = Math.abs(Tail.get(per_index-1) - TailAvg) > 10000;
+//        Tail.clear();
         return Analyzer.getStatus(CpuStat, TailStat, NetStat);
 
     }

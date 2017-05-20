@@ -301,37 +301,21 @@ public class PerfMonGui
                 systemStat.CollectData(res.getSampleLabel(), PerfMonSampleResult.getValue(res));
                 counter ++;
 
-                if(counter > 10)
+                if(counter > 100)
                 {
-                    // Periodic Collection ####################3
+                    // Periodic Collection ####################
 
                     systemStat.periodicCollection();
-
                     data_collection_counter ++;
                     if(data_collection_counter == 5) {
                         systemStat.findCpuGaps();
                         systemStat.findNetGaps();
                         systemStat.findMemGaps();
                         systemStat.findDiskGaps();
-
-
                         data_collection_counter = 0;
                     }
-
-                    //Decision Making ####################
-                    // Visualize #########################
-                    //recomTextArea.setText(systemStat.makeDecision());
                     recomTextArea.setText(systemStat.getSystemStatus());
-
-
-//                    recomTextArea.append("\n CPU: " + systemStat.GetCpuStat());
-//                    recomTextArea.append("\n Mem: " + systemStat.GetMemStat());
-//                    recomTextArea.append("\n Network I/O: " + systemStat.GetNetStat());
-//                    recomTextArea.append("\n Disk: " + systemStat.GetDiskStat());
-
                     counter = 0;
-                    //recomTextArea.append("\n===============================================");
-
                 }
                 updateGui(null);
             }
